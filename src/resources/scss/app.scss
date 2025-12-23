@@ -1,0 +1,18 @@
+@import 'variables';
+
+h1{
+    color: $yellow-color;
+}
+h2{
+    color: $blue-color;
+}
+.logo-web{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+.img-product{
+    width: 200px;
+    height: 200px;
+}

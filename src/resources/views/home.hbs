@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <div class="row g-4">
+    {{#each products}}
+    <div class="col-sm-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm product-card">
+        <a href="/products/{{this.slug}}" class="overflow-hidden">
+          <img 
+            src="{{this.image}}" 
+            class="card-img-top product-img"
+            alt="{{this.name}}">
+        </a>
+        <div class="card-body d-flex flex-column">
+          <a href="/products/{{this.slug}}" class="text-decoration-none text-dark">
+            <h5 class="card-title fw-semibold mb-2">
+              {{this.name}}
+            </h5>
+          </a>
+          <p class="card-text text-danger fw-bold fs-5 mb-3">
+            {{this.price}} đ
+          </p>
+          <a href="#" class="btn btn-warning mt-auto fw-semibold">
+            Thêm vào giỏ
+          </a>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
