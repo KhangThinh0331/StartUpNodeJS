@@ -9,6 +9,7 @@
                 <th scope="col">Giá sản phẩm</th>
                 <th scope="col">Hình ảnh</th>
                 <th scope="col">Mô tả</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -19,6 +20,10 @@
                 <td>{{this.price}}</td>
                 <td><img src="{{this.image}}" class="img-product" alt="{{this.name}}"></td>
                 <td>{{this.description}}</td>
+                <td>
+                    <a href="/products/{{this._id}}/edit" class="btn btn-link">Sửa</a>
+                    <a href="/products/{{this._id}}" class="btn btn-link">Xóa</a>
+                </td>
             </tr>
             {{/each}}
         </tbody>

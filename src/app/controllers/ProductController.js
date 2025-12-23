@@ -22,7 +22,19 @@ class ProductController {
     store(req, res, next) {
         const product = new Product(req.body)
         product.save()
-            .then(() => res.redirect('/'))
+            .then(() => res.redirect('/products/list'))
+            .catch(next)
+    }
+    edit(req, res, next) {
+        Product.findById(req.params.id)
+            .then(product => {
+                res.render('products/update', { product: mongooseToObject(product) })
+            })
+            .catch(next)
+    }
+    update(req, res, next) {
+        Product.updateOne({ _id: req.params.id }, req.body)
+            .then(() => res.redirect('/products/list'))
             .catch(next)
     }
 }

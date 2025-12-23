@@ -1,6 +1,7 @@
 const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
+const methodOverride = require('method-override')
 const { engine } = require('express-handlebars')
 const app = express()
 const port = 3000
@@ -11,6 +12,7 @@ const db = require('./config/db')
 db.connect()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(methodOverride('_method'))
 routes(app)
 
 app.use(express.static(path.join(__dirname, 'public')))
