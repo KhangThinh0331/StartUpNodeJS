@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const slugify = require('slugify')
+const moongooseDelete = require('mongoose-delete')
 const Schema = mongoose.Schema
 
 const Product = new Schema({
@@ -20,4 +21,5 @@ Product.pre('save', async function () {
   }
 })
 
+Product.plugin(moongooseDelete, { deletedAt : true, overrideMethods: 'all' })
 module.exports = mongoose.model('Product', Product)

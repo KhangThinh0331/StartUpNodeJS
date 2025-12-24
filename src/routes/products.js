@@ -7,6 +7,7 @@ router.post('/store', productController.store)
 router.get('/list', productController.list)
 router.get('/:id/edit', productController.edit)
 router.put('/:id/update', productController.update)
+router.delete('/:id/delete', productController.delete)
 router.get('/:slug', productController.show)
 
 module.exports = router

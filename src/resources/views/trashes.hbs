@@ -1,11 +1,8 @@
 <div class="mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="fw-bold">
-            <i class="bi bi-list-ul me-2"></i>Danh sách sản phẩm
+            <i class="bi bi-trash me-2"></i>Thùng rác
         </h3>
-        <a href="/products/create" class="btn btn-success rounded-pill">
-            <i class="bi bi-plus-circle me-1"></i> Thêm sản phẩm
-        </a>
     </div>
 
     <div class="table-responsive">
@@ -35,18 +32,18 @@
                         {{this.description}}
                     </td>
                     <td class="text-center">
-                        <a href="/products/{{this._id}}/edit" class="btn btn-sm btn-outline-primary me-1">
-                            <i class="bi bi-pencil-square me-1"></i>Sửa
+                        <a href="" class="btn btn-sm btn-outline-primary me-1 btn-restore" data-id="{{this._id}}">
+                            <i class="bi bi-pencil-square me-1"></i>Khôi phục
                         </a>
                         <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                             data-bs-target="#deleteProductModal" data-id="{{this._id}}">
-                            <i class="bi bi-trash me-1"></i>Xóa
+                            <i class="bi bi-trash me-1"></i>Xóa vĩnh viễn
                         </button>
                     </td>
                 </tr>
                 {{else}}
                 <tr>
-                    <td colspan="6" class="text-center">Không có sản phẩm nào</td>
+                    <td colspan="6" class="text-center">Thùng rác trống</td>
                 </tr>
                 {{/each}}
             </tbody>
@@ -67,6 +64,7 @@
 
             <div class="modal-body text-center">
                 <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+                <p class="text-muted small">Hành động này không thể hoàn tác.</p>
             </div>
 
             <form id="delete-product-form" method="POST">
@@ -82,16 +80,27 @@
         </div>
     </div>
 </div>
-
+<form name="restore-form" method="POST"></form>
 <script>
     const deleteProductModal = document.getElementById('deleteProductModal')
     const deleteForm = document.getElementById('delete-product-form')
+    const restoreForm = document.forms['restore-form']
+    const restoreButtons = document.querySelectorAll('.btn-restore')
 
     if (deleteProductModal) {
         deleteProductModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget
-            const productId = button.getAttribute('data-id')
-            deleteForm.action = `/products/${productId}/delete?_method=DELETE`
+            const id = button.getAttribute('data-id')
+            deleteForm.action = `/trashes/${id}/force?_method=DELETE`
         })
     }
+
+    restoreButtons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault()
+            const id = this.getAttribute('data-id')
+            restoreForm.action = `/trashes/${id}/restore?_method=PATCH`
+            restoreForm.submit()
+        })
+    })
 </script>

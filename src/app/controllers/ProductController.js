@@ -37,6 +37,11 @@ class ProductController {
             .then(() => res.redirect('/products/list'))
             .catch(next)
     }
+    delete(req, res, next) {
+        Product.delete({ _id: req.params.id })
+            .then(() => res.redirect('/products/list'))
+            .catch(next)
+    }
 }
 
 module.exports = new ProductController

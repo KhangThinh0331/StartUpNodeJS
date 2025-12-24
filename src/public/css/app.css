@@ -14,8 +14,30 @@ h2 {
 }
 
 .img-product {
-  width: 200px;
-  height: 200px;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.navbar .dropdown-menu {
+  border-radius: 12px;
+}
+
+.navbar .dropdown-item:hover {
+  background-color: #fff3cd;
+}
+
+.card {
+  border: none;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #f0ad4e;
 }
 
 /*# sourceMappingURL=app.css.map */
