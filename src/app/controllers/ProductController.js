@@ -20,8 +20,14 @@ class ProductController {
         res.render('products/create')
     }
     store(req, res, next) {
-        const product = new Product(req.body)
-        product.save()
+        const formData = req.body
+
+        if (req.file) {
+            formData.image = '/img/' + req.file.filename
+        }
+        const product = new Product(formData)
+        product
+            .save()
             .then(() => res.redirect('/products/list'))
             .catch(next)
     }
@@ -33,7 +39,15 @@ class ProductController {
             .catch(next)
     }
     update(req, res, next) {
-        Product.updateOne({ _id: req.params.id }, req.body)
+        const data = req.body
+
+        if (req.file) {
+            data.image = '/img/' + req.file.filename
+        } else {
+            data.image = req.body.oldImage
+        }
+
+        Product.updateOne({ _id: req.params.id }, data)
             .then(() => res.redirect('/products/list'))
             .catch(next)
     }
