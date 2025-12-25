@@ -4,11 +4,34 @@
             <i class="bi bi-trash me-2"></i>Thùng rác
         </h3>
     </div>
+    <div class="mb-3 d-flex align-items-center gap-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="checkAll">
+            <label class="form-check-label" for="checkAll">
+                Chọn tất cả
+            </label>
+        </div>
+        <button id="bulkRestoreBtn" class="btn btn-sm btn-outline-primary d-none">
+            <i class="bi bi-pencil-square me-1"></i>Khôi phục đã chọn
+        </button>
+        <button id="bulkForceBtn" class="btn btn-sm btn-outline-danger d-none" data-bs-toggle="modal"
+            data-bs-target="#deleteProductModal">
+            <i class="bi bi-trash me-1"></i>Xóa vĩnh viễn đã chọn
+        </button>
+    </div>
 
     <div class="table-responsive">
+        <form class="d-flex mb-3" method="GET" action="/trashes">
+            <input type="text" class="form-control me-2" name="q" placeholder="Tìm theo tên..."
+                value="{{query}}">
+            <button class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
         <table class="table table-hover align-middle shadow-sm">
             <thead class="table-warning">
                 <tr>
+                    <th></th>
                     <th>STT</th>
                     <th>Tên sản phẩm</th>
                     <th>Giá</th>
@@ -20,6 +43,11 @@
             <tbody>
                 {{#each products}}
                 <tr>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{this._id}}" name="trashIds[]">
+                        </div>
+                    </td>
                     <td class="fw-semibold">{{sum @index 1}}</td>
                     <td>{{this.name}}</td>
                     <td class="text-danger fw-semibold">
@@ -63,7 +91,7 @@
             </div>
 
             <div class="modal-body text-center">
-                <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+                <p>Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này không?</p>
                 <p class="text-muted small">Hành động này không thể hoàn tác.</p>
             </div>
 
@@ -81,19 +109,57 @@
     </div>
 </div>
 <form name="restore-form" method="POST"></form>
+<form id="bulk-force-form" method="POST">
+    <input type="hidden" name="ids" id="bulk-force-ids">
+</form>
+<form id="bulk-restore-form" method="POST">
+    <input type="hidden" name="ids" id="bulk-restore-ids">
+</form>
 <script>
     const deleteProductModal = document.getElementById('deleteProductModal')
     const deleteForm = document.getElementById('delete-product-form')
     const restoreForm = document.forms['restore-form']
     const restoreButtons = document.querySelectorAll('.btn-restore')
+    const checkAll = document.getElementById('checkAll')
+    const checkboxes = document.querySelectorAll('input[name="trashIds[]"]')
+    const bulkForceBtn = document.getElementById('bulkForceBtn')
+    const bulkRestoreBtn = document.getElementById('bulkRestoreBtn')
+    const bulkForceForm = document.getElementById('bulk-force-form')
+    const bulkForceIdsInput = document.getElementById('bulk-force-ids')
+    const bulkRestoreForm = document.getElementById('bulk-restore-form')
+    const bulkRestoreIdsInput = document.getElementById('bulk-restore-ids')
+    let deleteType = 'single'
+    let singleDeleteId = null
 
-    if (deleteProductModal) {
-        deleteProductModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget
-            const id = button.getAttribute('data-id')
-            deleteForm.action = `/trashes/${id}/force?_method=DELETE`
-        })
-    }
+    deleteProductModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget
+
+        if (button.dataset.id) {
+            deleteType = 'single'
+            singleDeleteId = button.dataset.id
+        } else {
+            deleteType = 'bulk'
+        }
+    })
+
+    deleteForm.addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        if (deleteType === 'single') {
+            deleteForm.action = `/trashes/${singleDeleteId}/force?_method=DELETE`
+            deleteForm.submit()
+        }
+
+        if (deleteType === 'bulk') {
+            const ids = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value)
+
+            bulkForceIdsInput.value = ids.join(',')
+            bulkForceForm.action = `/trashes/bulk-force?_method=DELETE`
+            bulkForceForm.submit()
+        }
+    })
 
     restoreButtons.forEach(button => {
         button.addEventListener('click', function (event) {
@@ -103,4 +169,43 @@
             restoreForm.submit()
         })
     })
+
+    bulkRestoreBtn.addEventListener('click', function () {
+        const ids = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value)
+
+        if (ids.length === 0) return
+
+        bulkRestoreIdsInput.value = ids.join(',')
+        bulkRestoreForm.action = '/trashes/bulk-restore?_method=PATCH'
+        bulkRestoreForm.submit()
+    })
+
+    checkAll.addEventListener('change', function () {
+        let anyChecked = this.checked
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = anyChecked
+        })
+        toggleBulkRestoreAndForceButton()
+
+    })
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            checkAll.checked = Array.from(checkboxes).every(cb => cb.checked)
+            toggleBulkRestoreAndForceButton()
+        })
+    })
+
+    function toggleBulkRestoreAndForceButton() {
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked)
+        if (anyChecked) {
+            bulkForceBtn.classList.remove('d-none')
+            bulkRestoreBtn.classList.remove('d-none')
+        } else {
+            bulkForceBtn.classList.add('d-none')
+            bulkRestoreBtn.classList.add('d-none')
+        }
+    }
 </script>

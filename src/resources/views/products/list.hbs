@@ -7,12 +7,33 @@
             <i class="bi bi-plus-circle me-1"></i> Thêm sản phẩm
         </a>
     </div>
-    
+    <div class="mb-3 d-flex align-items-center gap-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="checkAll">
+            <label class="form-check-label" for="checkAll">
+                Chọn tất cả
+            </label>
+        </div>
+
+        <button id="bulkDeleteBtn" class="btn btn-sm btn-outline-danger d-none" data-bs-toggle="modal"
+            data-bs-target="#deleteProductModal">
+            <i class="bi bi-trash me-1"></i>Xóa đã chọn
+        </button>
+    </div>
+
 
     <div class="table-responsive">
+        <form class="d-flex mb-3" method="GET" action="/products/list">
+            <input type="text" class="form-control me-2" name="q" placeholder="Tìm theo tên sản phẩm..."
+                value="{{query}}">
+            <button class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
         <table class="table table-hover align-middle shadow-sm">
             <thead class="table-warning">
                 <tr>
+                    <th></th>
                     <th>STT</th>
                     <th>Tên sản phẩm</th>
                     <th>Giá</th>
@@ -24,6 +45,11 @@
             <tbody>
                 {{#each products}}
                 <tr>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{this._id}}" name="productIds[]">
+                        </div>
+                    </td>
                     <td class="fw-semibold">{{sum @index 1}}</td>
                     <td>{{this.name}}</td>
                     <td class="text-danger fw-semibold">
@@ -83,16 +109,72 @@
         </div>
     </div>
 </div>
-
+<form id="bulk-delete-form" method="POST">
+    <input type="hidden" name="ids" id="bulk-delete-ids">
+</form>
 <script>
     const deleteProductModal = document.getElementById('deleteProductModal')
     const deleteForm = document.getElementById('delete-product-form')
+    const checkAll = document.getElementById('checkAll')
+    const checkboxes = document.querySelectorAll('input[name="productIds[]"]')
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn')
+    const bulkDeleteForm = document.getElementById('bulk-delete-form')
+    const bulkDeleteIdsInput = document.getElementById('bulk-delete-ids')
+    let deleteType = 'single'
+    let singleDeleteId = null
 
-    if (deleteProductModal) {
-        deleteProductModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget
-            const productId = button.getAttribute('data-id')
-            deleteForm.action = `/products/${productId}/delete?_method=DELETE`
+    deleteProductModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget
+
+        if (button.dataset.id) {
+            deleteType = 'single'
+            singleDeleteId = button.dataset.id
+        } else {
+            deleteType = 'bulk'
+        }
+    })
+
+    deleteForm.addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        if (deleteType === 'single') {
+            deleteForm.action = `/products/${singleDeleteId}/delete?_method=DELETE`
+            deleteForm.submit()
+        }
+
+        if (deleteType === 'bulk') {
+            const ids = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value)
+
+            bulkDeleteIdsInput.value = ids.join(',')
+            bulkDeleteForm.action = `/products/bulk-delete?_method=DELETE`
+            bulkDeleteForm.submit()
+        }
+    })
+
+    checkAll.addEventListener('change', function () {
+        let anyChecked = this.checked
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = anyChecked
         })
+        toggleBulkDeleteButton()
+
+    })
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            checkAll.checked = Array.from(checkboxes).every(cb => cb.checked)
+            toggleBulkDeleteButton()
+        })
+    })
+
+    function toggleBulkDeleteButton() {
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked)
+        if (anyChecked) {
+            bulkDeleteBtn.classList.remove('d-none')
+        } else {
+            bulkDeleteBtn.classList.add('d-none')
+        }
     }
 </script>

@@ -9,6 +9,7 @@ router.get('/list', productController.list)
 router.get('/:id/edit', productController.edit)
 router.put('/:id/update', upload.single('image'), productController.update)
 router.delete('/:id/delete', productController.delete)
+router.delete('/bulk-delete', productController.bulkDelete)
 router.get('/:slug', productController.show)
 
 module.exports = router
