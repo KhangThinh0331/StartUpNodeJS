@@ -1,4 +1,10 @@
-<div class="container mt-5">
+<div class="container mt-4" style="max-width: 1200px;">
+  <form class="d-flex mb-3" method="GET" action="/">
+    <input type="text" class="form-control me-2" name="q" placeholder="Tìm theo tên sản phẩm..." value="{{query}}">
+    <button class="btn btn-outline-primary">
+      <i class="bi bi-search"></i>
+    </button>
+  </form>
   <div class="row g-4">
     {{#each products}}
     <div class="col-sm-6 col-lg-4">
@@ -27,4 +33,54 @@
     </div>
     {{/each}}
   </div>
+  {{#if (gt pages 1)}}
+  <nav aria-label="Product pagination" class="mt-4">
+    <ul class="pagination justify-content-center align-items-center">
+
+      <li class="page-item {{#if (eq current 1)}}d-none{{/if}}">
+        <a class="page-link" href="/page/{{minus current 1}}{{#if query}}?q={{query}}{{/if}}">
+          &laquo;
+        </a>
+      </li>
+
+      {{#if (gt current 3)}}
+      <li class="page-item">
+        <a class="page-link" href="/page/1{{#if query}}?q={{query}}{{/if}}">
+          1
+        </a>
+      </li>
+
+      <li class="page-item disabled">
+        <span class="page-link">…</span>
+      </li>
+      {{/if}}
+
+      {{#paginateRange current pages 5}}
+      <li class="page-item {{#if active}}active{{/if}}">
+        <a class="page-link" href="/page/{{page}}{{#if ../query}}?q={{../query}}{{/if}}">
+          {{page}}
+        </a>
+      </li>
+      {{/paginateRange}}
+
+      {{#if (lt current (minus pages 2))}}
+      <li class="page-item disabled">
+        <span class="page-link">…</span>
+      </li>
+
+      <li class="page-item">
+        <a class="page-link" href="/page/{{pages}}{{#if query}}?q={{query}}{{/if}}">
+          {{pages}}
+        </a>
+      </li>
+      {{/if}}
+      <li class="page-item {{#if (eq current pages)}}d-none{{/if}}">
+        <a class="page-link" href="/page/{{sum current 1}}{{#if query}}?q={{query}}{{/if}}">
+          &raquo;
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+  {{/if}}
 </div>

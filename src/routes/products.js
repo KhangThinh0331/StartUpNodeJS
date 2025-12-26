@@ -11,5 +11,6 @@ router.put('/:id/update', upload.single('image'), productController.update)
 router.delete('/:id/delete', productController.delete)
 router.delete('/bulk-delete', productController.bulkDelete)
 router.get('/:slug', productController.show)
+router.get('/page/:page', productController.list)
 
 module.exports = router

@@ -8,7 +8,7 @@ function routes(app) {
     app.use('/news', newsRouter)
     app.use('/', siteRouter)
     app.use('/products', productRouter)
-    app.use('/', trashRouter)
+    app.use('/trashes', trashRouter)
 }
 
 module.exports = routes

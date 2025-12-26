@@ -3,6 +3,8 @@ const { multipleMongooseToObject } = require('../../util/mongoose')
 const { mongooseToObject } = require('../../util/mongoose')
 class ProductController {
     list(req, res, next) {
+        let perPage = 3;
+        let page = parseInt(req.params.page) || 1;
         const keyword = req.query.q
 
         let filter = {}
@@ -11,11 +13,17 @@ class ProductController {
         }
 
         Product.find(filter)
-            .then(products => {
-                res.render('products/list', {
-                    products: multipleMongooseToObject(products),
-                    query: keyword
-                })
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .then((products) => {
+                Product.countDocuments(filter).then((count) => {
+                    res.render('products/list', {
+                        products: multipleMongooseToObject(products),
+                        current: page,
+                        pages: Math.ceil(count / perPage),
+                        query: keyword
+                    });
+                });
             })
             .catch(next)
     }

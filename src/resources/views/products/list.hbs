@@ -79,6 +79,56 @@
             </tbody>
         </table>
     </div>
+    {{#if (gt pages 1)}}
+    <nav aria-label="Product pagination">
+        <ul class="pagination justify-content-center align-items-center">
+
+            <li class="page-item {{#if (eq current 1)}}d-none{{/if}}">
+                <a class="page-link" href="/products/page/{{minus current 1}}{{#if query}}?q={{query}}{{/if}}">
+                    &laquo;
+                </a>
+            </li>
+
+            {{#if (gt current 3)}}
+            <li class="page-item">
+                <a class="page-link" href="/products/page/1{{#if query}}?q={{query}}{{/if}}">
+                    1
+                </a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">…</span>
+            </li>
+            {{/if}}
+
+            {{#paginateRange current pages 5}}
+            <li class="page-item {{#if active}}active{{/if}}">
+                <a class="page-link" href="/products/page/{{page}}{{#if ../query}}?q={{../query}}{{/if}}">
+                    {{page}}
+                </a>
+            </li>
+            {{/paginateRange}}
+
+            {{#if (lt current (minus pages 2))}}
+            <li class="page-item disabled">
+                <span class="page-link">…</span>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" href="/products/page/{{pages}}{{#if query}}?q={{query}}{{/if}}">
+                    {{pages}}
+                </a>
+            </li>
+            {{/if}}
+            <li class="page-item {{#if (eq current pages)}}d-none{{/if}}">
+                <a class="page-link" href="/products/page/{{sum current 1}}{{#if query}}?q={{query}}{{/if}}">
+                    &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+    {{/if}}
 </div>
 
 

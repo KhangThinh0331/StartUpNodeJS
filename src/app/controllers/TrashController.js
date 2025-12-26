@@ -2,15 +2,27 @@ const Product = require('../models/Product')
 const { multipleMongooseToObject } = require('../../util/mongoose')
 class TrashController {
     show(req, res, next) {
+        let perPage = 3;
+        let page = parseInt(req.params.page) || 1;
         const keyword = req.query.q
 
         let filter = {}
         if (keyword) {
             filter.name = { $regex: keyword, $options: 'i' }
         }
+
         Product.findDeleted(filter)
-            .then(products => {
-                res.render('trashes', { products: multipleMongooseToObject(products), query: keyword })
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .then((products) => {
+                Product.countDocumentsDeleted(filter).then((count) => {
+                    res.render('trashes', {
+                        products: multipleMongooseToObject(products),
+                        current: page,
+                        pages: Math.ceil(count / perPage),
+                        query: keyword
+                    });
+                });
             })
             .catch(next)
     }
