@@ -1,3 +1,4 @@
+require('dotenv').config()
 const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
@@ -73,7 +74,4 @@ function trashCount(req, res, next) {
     .catch(next)
 }
 
-// app.use(morgan('combined'))
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
-})
+app.listen(port)
