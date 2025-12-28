@@ -41,7 +41,7 @@ class ProductController {
         const formData = req.body
 
         if (req.file) {
-            formData.image = '/img/' + req.file.filename
+            formData.image = req.file.path
         }
         const product = new Product(formData)
         product
@@ -60,7 +60,7 @@ class ProductController {
         const data = req.body
 
         if (req.file) {
-            data.image = '/img/' + req.file.filename
+            data.image = req.file.path
         } else {
             data.image = req.body.oldImage
         }
