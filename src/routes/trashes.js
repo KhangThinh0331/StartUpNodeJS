@@ -7,6 +7,6 @@ router.patch('/:id/restore', trashController.restore)
 router.patch('/bulk-restore', trashController.bulkRestore)
 router.delete('/:id/force', trashController.forceDelete)
 router.delete('/bulk-force', trashController.bulkForceDelete)
-router.get('/page/:page', trashController.show)
+router.get("/count", trashController.count);
 
 module.exports = router

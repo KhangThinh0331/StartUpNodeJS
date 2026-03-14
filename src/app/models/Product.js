@@ -21,5 +21,16 @@ Product.pre('save', async function () {
   }
 })
 
+Product.pre('findOneAndUpdate', async function () {
+  const update = this.getUpdate();
+  if (update.name) {
+    update.slug = slugify(update.name, {
+      lower: true,
+      strict: true,
+      locale: 'vi'
+    })
+  }
+})
+
 Product.plugin(moongooseDelete, { deletedAt : true, overrideMethods: 'all' })
 module.exports = mongoose.model('Product', Product)
